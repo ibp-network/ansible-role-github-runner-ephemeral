@@ -1,7 +1,6 @@
 # Ephemeral Github Runner Ansible role
 This ansible role installs and configures rootless docker and a self-hosted ephemeral github runner in a secure way.
 
-
 Scripts used used in this for the `runner` service are from @alvicsam and his [github-runner-docker-ephemeral](https://github.com/alvicsam/github-runner-docker-ephemeral/) repo.
 By default with the [docker-github-actions-runner](https://github.com/myoung34/docker-github-actions-runner) setup variables are not safe from exfiltration. Read his [blogpost](https://dev.to/alvic/ephemeral-self-hosted-github-actions-runners-42ma) for more information.
 ```
