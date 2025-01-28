@@ -1,0 +1,35 @@
+---
+- name: Check runner_name variable (RUN ONCE)
+  ansible.builtin.assert:
+    that:
+      - runner_name is defined
+    fail_msg: "runner_name is not defined"
+  run_once: true
+
+- name: Check runner_org variable (RUN ONCE)
+  ansible.builtin.assert:
+    that:
+      - runner_org is defined
+    fail_msg: "runner_org is not defined"
+  run_once: true
+
+- name: Check runner_app_id variable (RUN ONCE)
+  ansible.builtin.assert:
+    that:
+      - runner_app_id is defined
+    fail_msg: "runner_app_id is not defined"
+  run_once: true
+
+- name: Check runner_app_login variable (RUN ONCE)
+  ansible.builtin.assert:
+    that:
+      - runner_app_login is defined
+    fail_msg: "runner_app_login is not defined"
+  run_once: true
+
+- name: Check runner_app_private_key variable (RUN ONCE)
+  ansible.builtin.assert:
+    that:
+      - runner_app_private_key is defined
+    fail_msg: "runner_app_private_key is not defined"
+  run_once: true

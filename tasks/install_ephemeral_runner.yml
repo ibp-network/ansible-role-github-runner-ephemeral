@@ -1,0 +1,64 @@
+---
+- name: Copy runner env file
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "ephemeral_runner.env.j2"
+    dest: "{{ _user_info.home }}/runner.env"
+    mode: "0600"
+  no_log: true
+  notify: Restart runner
+
+- name: Copy runner systemd service file
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "runner.service.j2"
+    dest: "{{ _user_info.home }}/.config/systemd/user/runner.service"
+    mode: "0644"
+  notify: Restart runner
+
+- name: Copy runner token script
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "get_runner_token.sh.j2"
+    dest: "{{ _user_info.home }}/bin/get_runner_token.sh"
+    mode: "0755"
+  notify: Restart runner
+
+- name: Copy get token script
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "get_token.sh.j2"
+    dest: "{{ _user_info.home }}/bin/get_token.sh"
+    mode: "0755"
+  notify: Restart runner
+
+- name: Copy post stop script
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "post-stop.sh.j2"
+    dest: "{{ _user_info.home }}/bin/post-stop.sh"
+    mode: "0755"
+  notify: Restart runner
+
+- name: Copy pre-start script
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "pre-start.sh.j2"
+    dest: "{{ _user_info.home }}/bin/pre-start.sh"
+    mode: "0755"
+  notify: Restart runner
+
+- name: Copy start-runner script
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "start-runner.sh.j2"
+    dest: "{{ _user_info.home }}/bin/start-runner.sh"
+    mode: "0755"
+  notify: Restart runner

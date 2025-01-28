@@ -1,0 +1,18 @@
+[Unit]
+Description=GitHub Runner
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment=PATH={{ _user_info.home }}/bin:/sbin:/usr/sbin:{{ _user_info.home }}/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+Environment="XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}"
+Environment="DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock"
+WorkingDirectory={{ _user_info.home }}
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-{{ _user_info.home }}/bin/pre-start.sh
+ExecStart={{ _user_info.home }}/bin/start-runner.sh
+ExecStopPost={{ _user_info.home }}/bin/post-stop.sh
+
+[Install]
+WantedBy=default.target

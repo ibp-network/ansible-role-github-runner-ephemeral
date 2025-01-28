@@ -1,0 +1,33 @@
+---
+- name: Create groups'
+  become: true
+  ansible.builtin.group:
+    name: "{{ runner_group }}"
+    state: present
+
+- name: Create users
+  become: true
+  ansible.builtin.user:
+    name: "{{ runner_user }}"
+    group: "{{ runner_group }}"
+    create_home: true
+    home: "{{ runner_dir }}"
+    state: present
+    shell: "/bin/bash"
+  register: _user_info
+
+- name: Enable linger
+  become: true
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ runner_user }}"
+    creates: "creates: /var/lib/systemd/linger/{{ runner_user }}"
+
+- name: Add exports to .bashrc
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ runner_dir }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
+      export PATH=/home/github-runner/bin:$PATH
+      export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock

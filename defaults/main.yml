@@ -1,0 +1,16 @@
+---
+docker_version: 27.5.1
+docker_checksum: "4f798b3ee1e0140eab5bf30b0edc4e84f4cdb53255a429dc3bbae9524845d640"
+docker_checksum_extras: "40aef06990b062eab77dd1ad0dd642b5d5a7267032d406b8d080325d0d764a7f"
+docker_host: "unix:///run/user/{{ _user_info.uid }}/docker.sock"
+
+runner_user: github-runner
+runner_group: github-runner
+runner_dir: /home/github-runner
+runner_scope: org
+runner_labels: self-hosted,ephemeral,debian
+runner_run_as_root: true
+runner_disable_auto_update: false
+runner_is_ephemeral: true
+runner_build: myoung34/github-runner:debian-bookworm
+# runner_build: myoung34/github-runner:ubuntu-jammy

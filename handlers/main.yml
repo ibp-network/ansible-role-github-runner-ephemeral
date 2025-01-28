@@ -1,0 +1,20 @@
+---
+- name: Restart docker
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.systemd:
+    name: docker.service
+    state: restarted
+    scope: user
+    daemon_reload: true
+  when: not ansible_check_mode
+
+- name: Restart runner
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.systemd:
+    name: runner.service
+    state: restarted
+    scope: user
+    daemon_reload: true
+  when: not ansible_check_mode

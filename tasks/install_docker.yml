@@ -1,0 +1,84 @@
+---
+- name: Get docker version
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.command:
+    cmd: "{{ _user_info.home }}/bin/docker version"
+  check_mode: false
+  register: _docker_version
+  changed_when: false
+  failed_when: false
+
+- name: Create docker bin dir
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.file:
+    path: "{{ _user_info.home }}/bin"
+    state: directory
+    mode: "0700"
+
+- name: Create docker conffig dir
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.file:
+    path: "{{ _user_info.home }}/.config/docker"
+    state: directory
+    mode: "0700"
+
+- name: Create systemd config dir
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.file:
+    path: "{{ _user_info.home }}/.config/systemd/user"
+    state: directory
+    mode: "0700"
+
+- name: Install docker
+  when: docker_version not in _docker_version.stdout
+  block:
+    - name: Download docker
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/static/stable/x86_64/docker-{{ docker_version }}.tgz"
+        dest: "/tmp/docker-{{ docker_version }}.tgz"
+        checksum: sha256:{{ docker_checksum }}
+        mode: "0755"
+
+    - name: Download docker extras
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/static/stable/x86_64/docker-rootless-extras-{{ docker_version }}.tgz"
+        dest: "/tmp/docker-rootless-extras-{{ docker_version }}.tgz"
+        checksum: sha256:{{ docker_checksum_extras }}
+        mode: "0755"
+
+    - name: Extract docker
+      become: true
+      become_user: "{{ runner_user }}"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "/tmp/docker-{{ docker_version }}.tgz"
+        dest: "{{ _user_info.home }}/bin"
+        extra_opts:
+          - --strip-components=1
+      notify: Restart docker
+      when: not ansible_check_mode
+
+    - name: Extract docker extras
+      become: true
+      become_user: "{{ runner_user }}"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "/tmp/docker-rootless-extras-{{ docker_version }}.tgz"
+        dest: "{{ _user_info.home }}/bin"
+        extra_opts:
+          - --strip-components=1
+      notify: Restart docker
+      when: not ansible_check_mode
+
+- name: Copy docker systemd service file
+  become: true
+  become_user: "{{ runner_user }}"
+  ansible.builtin.template:
+    src: "docker.service.j2"
+    dest: "{{ _user_info.home }}/.config/systemd/user/docker.service"
+    mode: "0644"
+  notify: Restart docker

@@ -1,0 +1,15 @@
+---
+- name: Include Assert tasks
+  ansible.builtin.include_tasks: assert.yaml
+
+- name: Include tasks to install dependencies and prepare
+  ansible.builtin.include_tasks: preflight.yaml
+
+- name: Include tasks to manage user
+  ansible.builtin.include_tasks: user.yaml
+
+- name: Include tasks to install docker
+  ansible.builtin.include_tasks: install_docker.yaml
+
+- name: Include tasks to install ephemeral runner
+  ansible.builtin.include_tasks: install_ephemeral_runner.yaml

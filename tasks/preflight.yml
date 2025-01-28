@@ -1,0 +1,29 @@
+---
+- name: Install dependencies
+  become: true
+  ansible.builtin.package:
+    pkg:
+      - uidmap
+      - dbus-user-session
+      - slirp4netns
+      - jq
+      - fuse-overlayfs
+      - acl
+      - ca-certificates
+    state: present
+    update_cache: true
+  when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "11")
+
+- name: Install dependencies on Debian Bookworm
+  become: true
+  ansible.builtin.package:
+    pkg:
+      - uidmap
+      - dbus-user-session
+      - slirp4netns
+      - jq
+      - acl
+      - ca-certificates
+    state: present
+    update_cache: true
+  when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "12")
