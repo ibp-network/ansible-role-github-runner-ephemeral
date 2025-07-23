@@ -29,5 +29,4 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     block: |
       export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
-      export PATH=/home/github-runner/bin:$PATH
       export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock

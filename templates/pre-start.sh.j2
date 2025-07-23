@@ -22,14 +22,16 @@ unset APP_LOGIN
 export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
 export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock
 
-mkdir -p {{ _user_info.home }}/dind-etc
-docker run --rm --name dind-prepare -exec docker:27.0.2-dind-rootless cat /etc/subuid > {{ _user_info.home }}/dind-etc/subuid
-docker run --rm --name dind-prepare -exec docker:27.0.2-dind-rootless cat /etc/subgid > {{ _user_info.home }}/dind-etc/subgid
-docker run --rm --name dind-prepare -exec docker:27.0.2-dind-rootless cat /etc/group > {{ _user_info.home }}/dind-etc/group
-docker run --rm --name dind-prepare -exec docker:27.0.2-dind-rootless cat /etc/passwd > {{ _user_info.home }}/dind-etc/passwd
+docker pull {{ runner_build }}
 
-echo 'runner:x:1001:1001:runner:/home/runner:/bin/bash' >> {{ _user_info.home }}/dind-etc/passwd
-echo 'runner:x:1001:' >> {{ _user_info.home }}/dind-etc/group
+mkdir -p {{ _user_info.home }}/dind-etc
+docker run --rm --name dind-prepare -exec docker:{{ docker_dind_version }}-dind-rootless cat /etc/subuid > {{ _user_info.home }}/dind-etc/subuid
+docker run --rm --name dind-prepare -exec docker:{{ docker_dind_version }}-dind-rootless cat /etc/subgid > {{ _user_info.home }}/dind-etc/subgid
+docker run --rm --name dind-prepare -exec docker:{{ docker_dind_version }}-dind-rootless cat /etc/group > {{ _user_info.home }}/dind-etc/group
+docker run --rm --name dind-prepare -exec docker:{{ docker_dind_version }}-dind-rootless cat /etc/passwd > {{ _user_info.home }}/dind-etc/passwd
+
+echo 'runner:x:{{ _user_info.uid }}:{{ _user_info.uid }}:runner:/home/runner:/bin/bash' >> {{ _user_info.home }}/dind-etc/passwd
+echo 'runner:x:{{ _user_info.uid }}:' >> {{ _user_info.home }}/dind-etc/group
 echo 'runner:100000:65536' >> {{ _user_info.home }}/dind-etc/subgid
 echo 'runner:100000:65536' >>  {{ _user_info.home }}/dind-etc/subuid
 
@@ -40,12 +42,12 @@ docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
 docker run --rm --name dind-prepare -exec -v dindHome:/home debian:12-slim bash -c "mkdir /home/runner; chown -R 1001:1001 /home/runner"
-docker run --rm --name dind-prepare -exec -v dockerSock:/run/docker debian:12-slim bash -c "cd /run; chmod 777 docker"
+docker run --rm --name dind-prepare -exec -v dockerSock:/run/user/{{ _user_info.uid }} debian:12-slim bash -c "cd /run; chmod 777 docker"
 
 docker run -d --rm --name dind-rootless \
   --privileged \
   -exec \
-  -v dockerSock:/run/docker \
+  -v dockerSock:/run/user/{{ _user_info.uid }} \
   -v {{ _user_info.home }}/dind-etc/subuid:/etc/subuid \
   -v {{ _user_info.home }}/dind-etc/subgid:/etc/subgid \
   -v {{ _user_info.home }}/dind-etc/passwd:/etc/passwd \
@@ -54,10 +56,8 @@ docker run -d --rm --name dind-rootless \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
-  docker:27.0.2-dind sh -c "dockerd --host=unix:///run/docker/docker.sock"
-  # remove previous line and uncomment the following line to use fuse-overlayfs
-  # docker:27.0.2-dind sh -c "apk update; apk add fuse-overlayfs; dockerd -s fuse-overlayfs --host=unix:///run/docker/docker.sock"
+  docker:{{ docker_dind_version }}-dind sh -c "dockerd --host=unix:///run/user/{{ _user_info.uid }}/docker.sock"
 
 sleep 3
 
-docker run --rm --name dind-prepare -exec -v dockerSock:/run/docker debian:12-slim bash -c "cd /run/docker; chmod 666 docker.sock"
+docker run --rm --name dind-prepare -exec -v dockerSock:/run/user/{{ _user_info.uid }} debian:12-slim bash -c "cd /run/user/{{ _user_info.uid }}; chmod 666 docker.sock"

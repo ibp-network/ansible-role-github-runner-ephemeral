@@ -5,7 +5,7 @@ export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock
 docker run --rm --name github-runner \
   --privileged \
   --env-file {{ _user_info.home }}/runner-decrypted.env \
-  -v dockerSock:/run/docker \
+  -v dockerSock:/run/user/{{ _user_info.uid }} \
   -v dindHome:/home \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
