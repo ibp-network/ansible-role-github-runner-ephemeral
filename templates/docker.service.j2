@@ -5,10 +5,8 @@ Documentation=https://docs.docker.com/go/rootless/
 Requires=dbus.socket
 
 [Service]
-Environment=PATH={{ _user_info.home }}/bin:/sbin:/usr/sbin:{{ _user_info.home }}/bin:{{ _user_info.home }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-Environment="XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}"
-Environment="DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock"
-ExecStart={{ _user_info.home }}/bin/dockerd-rootless.sh
+Environment=PATH=/usr/bin:/sbin:/usr/sbin:{{ _user_info.home }}/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+ExecStart=/usr/bin/dockerd-rootless.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 TimeoutSec=0
 RestartSec=2
