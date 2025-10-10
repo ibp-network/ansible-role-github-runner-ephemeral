@@ -15,9 +15,9 @@ To solve this we are using @alvicsam's solution and are going to run another doc
 
 ## Role Requirements
 ---
-This role currently only supports Debian.
+This role currently only supports Debian (and probably ubuntu).
 
-**requirements.yaml**
+**requirements.yml**
 ```yml
 ---
 roles:
