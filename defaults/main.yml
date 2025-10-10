@@ -1,5 +1,6 @@
 ---
 docker_host: "unix:///run/user/{{ _user_info.uid }}/docker.sock"
+
 docker_dind_version: 28.3
 
 runner_user: github-runner
