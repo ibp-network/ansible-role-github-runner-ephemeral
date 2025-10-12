@@ -7,10 +7,8 @@ runner_user: github-runner
 runner_group: github-runner
 runner_dir: /home/github-runner
 runner_scope: org
-runner_labels: self-hosted,ephemeral,ubuntu,ubuntu-latest
+runner_labels: self-hosted,ephemeral,ubuntu-latest
 runner_run_as_root: true
 runner_disable_auto_update: false
 runner_is_ephemeral: true
-# runner_build: myoung34/github-runner:debian-bookworm
-# runner_build: myoung34/github-runner:ubuntu-jammy
 runner_build: myoung34/github-runner:ubuntu-noble
