@@ -15,7 +15,7 @@ To solve this we are using @alvicsam's solution and are going to run another doc
 
 ## Role Requirements
 ---
-This role currently only supports Debian (and probably ubuntu).
+This role currently only supports Debian (and Ubuntu).
 
 **requirements.yml**
 ```yml
@@ -28,7 +28,7 @@ roles:
 ```
 
 ```bash
-ansible-galaxy install -r requirements_collections.yml
+ansible-galaxy install -r requirements.yml
 ```
 
 ## Using the Role
@@ -68,20 +68,20 @@ runner_app_private_key: |
 ### Variables
 ---
 The following are the ones that **have** to be set
-| Variable      | Description      |
-| ------------- | ------------- |
-| `runner_name` | The name of the ephemeral runner, this will show up in the org in github |
-| `runner_org` | The github organisation this runner will join. For example `ibp-network` or `amforc` |
-| `runner_app_id` | The github application ID |
-| `runner_app_login` | The github application login id, if not specified, the same value as `runner_org` can be used |
-| `runner_app_private_key` | The github application private key |
+| Variable      | Description   | Value |
+| ------------- | ------------- | ----- |
+| `runner_name` | The name of the ephemeral runner, this will show up in the org in github. | use `ibp-xx` where *xx* is your ISO code |
+| `runner_org` | The github organisation this runner will join. | please request this |
+| `runner_app_id` | The github application ID. | please request this |
+| `runner_app_login` | The github application login id. If not specified, the same value as `runner_org` can be used | please request this |
+| `runner_app_private_key` | The github application private key | please request this |
 
 Some of the default ones, can be changed to your needs
 | Variable      | Default | Description      |
 | ------------- | ------------- | ------------- |
 | `runner_scope` | `org` | The scope the runner will be registered on |
-| `runner_labels` | `self-hosted,ephemeral,debian` | A comma separated string to indicate the labels. |
-| `runner_build` | `myoung34/github-runner:debian-bookworm` | Using debian by default, if you want ubuntu: `myoung34/github-runner:ubuntu-jammy`. More options [here](https://github.com/myoung34/docker-github-actions-runner?tab=readme-ov-file#docker-artifacts) |
+| `runner_labels` | `self-hosted,ephemeral,ubuntu,ubuntu-latest` | A comma separated string to indicate the labels. |
+| `runner_build` | `myoung34/github-runner:debian-bookworm` | Using debian by default, if you want ubuntu: `myoung34/github-runner:ubuntu-noble`. More options [here](https://github.com/myoung34/docker-github-actions-runner?tab=readme-ov-file#docker-artifacts) |
 
 ### Creating a Github app
 ---
@@ -89,10 +89,10 @@ If a project wants a ephemeral runner, run by the IBP they first need to create 
 
 - Go to: Github > org > settings > developer settings > github apps > new github app
   - Enter name
-  - Homeage url can be any place holder
+  - Homepage url can be any place holder
   - `callback url` can be left empty
-  - `webhook` falase
-  - *Organization permissoins*: `Self-hosted runners Read & Write`
+  - `webhook` false
+  - *Organization permissions*: `Self-hosted runners Read & Write`
   - *Where can this GitHub App be installed?*: `Only on this account`
   - **create**
 - copy the `app id`

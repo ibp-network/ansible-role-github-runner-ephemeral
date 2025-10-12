@@ -29,3 +29,18 @@
     state: present
     update_cache: true
   when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "12")
+
+- name: Install dependencies on Ubuntu noble
+  become: true
+  ansible.builtin.package:
+    pkg:
+      - uidmap
+      - dbus-user-session
+      - slirp4netns
+      - jq
+      - acl
+      - ca-certificates
+      - curl
+    state: present
+    update_cache: true
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "24")
