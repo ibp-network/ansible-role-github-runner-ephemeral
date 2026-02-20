@@ -1,0 +1,7 @@
+#!/bin/bash
+export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
+export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock
+
+# Prune dangling images
+docker image prune -f
+docker builder prune -f
