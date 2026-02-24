@@ -1,0 +1,14 @@
+- name: Install docker cleanup script
+  ansible.builtin.template:
+    src: docker_cleanup.sh.j2
+    dest: "{{ _user_info.home }}/docker_cleanup.sh"
+    owner: "{{ _user_info.name }}"
+    mode: "0755"
+
+- name: Schedule cron to run docker cleanup script daily at 03:00
+  ansible.builtin.cron:
+    name: "Run docker cleanup script daily"
+    user: "{{ _user_info.name }}"
+    minute: "0"
+    hour: "3"
+    job: "{{ _user_info.home }}/docker_cleanup.sh >> {{ _user_info.home }}/docker-cleanup.log 2>&1"

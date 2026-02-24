@@ -7,6 +7,8 @@ docker stop dind-rootless || echo ok
 
 sleep 5
 
+docker rm github-runner dind-rootless
+
 docker volume rm dindHome
 docker volume rm dockerSock
 docker volume rm dindWork
