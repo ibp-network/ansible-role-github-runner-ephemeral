@@ -1,19 +1,24 @@
 #!/bin/bash
-export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
-export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock
+echo "Running the post-stop script"
 
-docker stop github-runner || echo ok
-docker stop dind-rootless || echo ok
+export XDG_RUNTIME_DIR={{ runtime_dir }}
+export DOCKER_HOST={{ docker_host }}
+
+docker stop github-runner       || echo ok
+docker stop secured-container   || echo ok
 
 sleep 5
 
-docker rm github-runner dind-rootless
+docker rm github-runner
+docker rm secured-container
 
 docker volume rm dindHome
 docker volume rm dockerSock
 docker volume rm dindWork
 docker volume rm dindRunner
 docker volume rm dindToolsCache
+
+docker system prune -af --volumes
 
 rm -rf {{ _user_info.home }}/dind-etc
 rm -f {{ _user_info.home }}/runner-decrypted.env

@@ -28,5 +28,5 @@
     path: "{{ runner_dir }}/.bashrc"
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     block: |
-      export XDG_RUNTIME_DIR=/run/user/{{ _user_info.uid }}
-      export DOCKER_HOST=unix:///run/user/{{ _user_info.uid }}/docker.sock
+      export XDG_RUNTIME_DIR={{ runtime_dir }}
+      export DOCKER_HOST={{ docker_host }}
