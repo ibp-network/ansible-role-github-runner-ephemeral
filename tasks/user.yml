@@ -1,9 +1,10 @@
 ---
-- name: Create groups'
+- name: Create groups
   become: true
   ansible.builtin.group:
     name: "{{ runner_group }}"
     state: present
+  register: _group_info
 
 - name: Create users
   become: true
