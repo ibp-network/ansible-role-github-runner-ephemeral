@@ -2,23 +2,23 @@
 echo "Running the pre-start script"
 
 # scripts and runner will use runner-decrypted.env
-cp {{ _user_info.home }}/runner.env {{ _user_info.home }}/runner-decrypted.env
+cp {{ runner_dir }}/runner.env {{ runner_dir }}/runner-decrypted.env
 
 # move the private key to a separate file
-cat {{ _user_info.home }}/runner.env | grep APP_PRIVATE_KEY | sed 's/APP_PRIVATE_KEY=//g' | sed 's/\\n/\'$'\n''/g' > {{ _user_info.home }}/runner-decrypted-private-key.pem
+cat {{ runner_dir }}/runner.env | grep APP_PRIVATE_KEY | sed 's/APP_PRIVATE_KEY=//g' | sed 's/\\n/\'$'\n''/g' > {{ runner_dir }}/runner-decrypted-private-key.pem
 
 # remove the private key from the runner-decrypted.env
-sed -i '/APP_PRIVATE_KEY/d' {{ _user_info.home }}/runner-decrypted.env
+sed -i '/APP_PRIVATE_KEY/d' {{ runner_dir }}/runner-decrypted.env
 
 # generate short-lived token
-export $(cat {{ _user_info.home }}/runner-decrypted.env)
-ACCESS_TOKEN=$(APP_ID="${APP_ID}" REPO_URL="${REPO_URL}" bash {{ _user_info.home }}/bin/get_token.sh)
-_TOKEN=$(ACCESS_TOKEN="${ACCESS_TOKEN}" bash {{ _user_info.home }}/bin/get_runner_token.sh)
-echo "RUNNER_TOKEN=$(echo "${_TOKEN}" | jq -r .token)" >> {{ _user_info.home }}/runner-decrypted.env
+export $(cat {{ runner_dir }}/runner-decrypted.env)
+ACCESS_TOKEN=$(APP_ID="${APP_ID}" REPO_URL="${REPO_URL}" bash {{ runner_dir }}/bin/get_token.sh)
+_TOKEN=$(ACCESS_TOKEN="${ACCESS_TOKEN}" bash {{ runner_dir }}/bin/get_runner_token.sh)
+echo "RUNNER_TOKEN=$(echo "${_TOKEN}" | jq -r .token)" >> {{ runner_dir }}/runner-decrypted.env
 
 # remove the APP_ID from the runner-decrypted.env
-sed -i '/APP_ID/d' {{ _user_info.home }}/runner-decrypted.env
-sed -i '/APP_LOGIN/d' {{ _user_info.home }}/runner-decrypted.env
+sed -i '/APP_ID/d' {{ runner_dir }}/runner-decrypted.env
+sed -i '/APP_LOGIN/d' {{ runner_dir }}/runner-decrypted.env
 unset APP_ID
 unset APP_LOGIN
 
@@ -30,18 +30,17 @@ docker pull {{ runner_build }}
 docker pull {{ dind_rooted_build }}
 docker pull {{ dind_rootless_build }}
 
-mkdir -p {{ _user_info.home }}/dind-etc
+mkdir -p {{ runner_dir }}/dind-etc
 
-docker run --rm --name dind-prepare {{ dind_rootless_build }} sh -c "\
-  cat /etc/subuid  > {{ _user_info.home }}/dind-etc/subuid;\
-  cat /etc/subgid  > {{ _user_info.home }}/dind-etc/subgid;\
-  cat /etc/group   > {{ _user_info.home }}/dind-etc/group;\
-  cat /etc/passwd  > {{ _user_info.home }}/dind-etc/passwd"
+docker run --rm --name dind-prepare {{ dind_rootless_build }} cat /etc/subuid  > {{ runner_dir }}/dind-etc/subuid
+docker run --rm --name dind-prepare {{ dind_rootless_build }} cat /etc/subgid  > {{ runner_dir }}/dind-etc/subgid
+docker run --rm --name dind-prepare {{ dind_rootless_build }} cat /etc/group   > {{ runner_dir }}/dind-etc/group
+docker run --rm --name dind-prepare {{ dind_rootless_build }} cat /etc/passwd  > {{ runner_dir }}/dind-etc/passwd
 
-echo '{{ runner_user }}:32768:65536'                                                                           >> {{ _user_info.home }}/dind-etc/subuid
-echo '{{ runner_group }}:32768:65536'                                                                          >> {{ _user_info.home }}/dind-etc/subgid
-echo '{{ runner_group }}:x:{{ _group_info.gid }}:{{ runner_user }}'                                            >> {{ _user_info.home }}/dind-etc/group
-echo '{{ runner_user }}:x:{{ _user_info.uid }}:{{ _group_info.gid }}:Github Runner:{{ runner_dir }}:/bin/bash' >> {{ _user_info.home }}/dind-etc/passwd
+echo '{{ runner_user }}:32768:65536' >> {{ runner_dir }}/dind-etc/subuid
+echo '{{ runner_group }}:32768:65536' >> {{ runner_dir }}/dind-etc/subgid
+echo '{{ runner_group }}:x:{{ _group_info.gid }}:{{ runner_user }}' >> {{ runner_dir }}/dind-etc/group
+echo '{{ runner_user }}:x:{{ _user_info.uid }}:{{ _group_info.gid }}:Github Runner:{{ runner_dir }}:/bin/bash' >> {{ runner_dir }}/dind-etc/passwd
 
 docker volume create --name dindHome
 docker volume create --name dockerSock
@@ -52,10 +51,10 @@ docker volume create --name dindToolsCache
 docker run -d --rm --name secured-container \
   --privileged \
   -v dockerSock:{{ runtime_dir }} \
-  -v {{ _user_info.home }}/dind-etc/subuid:/etc/subuid \
-  -v {{ _user_info.home }}/dind-etc/subgid:/etc/subgid \
-  -v {{ _user_info.home }}/dind-etc/passwd:/etc/passwd \
-  -v {{ _user_info.home }}/dind-etc/group:/etc/group \
+  -v {{ runner_dir }}/dind-etc/subuid:/etc/subuid \
+  -v {{ runner_dir }}/dind-etc/subgid:/etc/subgid \
+  -v {{ runner_dir }}/dind-etc/passwd:/etc/passwd \
+  -v {{ runner_dir }}/dind-etc/group:/etc/group \
   -v dindHome:/home \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
