@@ -28,6 +28,7 @@ export DOCKER_HOST={{ docker_host }}
 
 docker pull {{ os_build }}
 docker pull {{ runner_build }}
+docker pull {{ dind_rooted_build }}
 docker pull {{ dind_rootless_build }}
 
 mkdir -p {{ runner_dir }}/dind-etc
@@ -48,7 +49,7 @@ docker volume create --name dindWork
 docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
-docker run --rm --name dind-prepare -v dindHome:/home {{ os_build }} sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_user }}:{{ runner_group }} /home/{{ runner_user }}"
+docker run --rm --name dind-prepare -v dindHome:/home {{ os_build }} sh -c "mkdir /home/{{ runner_user }} && chown -R {{ _user_info.uid }}:{{ _group_info.gid }} /home/{{ runner_user }}"
 docker run --rm --name dind-prepare -v dockerSock:{{ runtime_dir }} {{ os_build }} chmod 777 /run/docker
 
 docker run -d --rm --name secured-container \
@@ -62,7 +63,7 @@ docker run -d --rm --name secured-container \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
-  {{ dind_rootless_build }} \
+  {{ dind_rooted_build }} \
   dockerd --host={{ docker_host }}
   
 sleep 3
