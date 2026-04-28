@@ -1,9 +1,0 @@
-#!/bin/bash
-echo "Running the docker_cleanup script"
-
-export XDG_RUNTIME_DIR={{ runtime_dir }}
-export DOCKER_HOST={{ docker_host }}
-
-# Prune dangling images
-docker image prune -f
-docker builder prune -f

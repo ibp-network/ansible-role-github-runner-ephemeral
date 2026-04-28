@@ -4,7 +4,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "ephemeral_runner.env.j2"
-    dest: "{{ _user_info.home }}/runner.env"
+    dest: "{{ runner_dir }}/runner.env"
     mode: "0600"
   no_log: true
   notify: Restart runner
@@ -14,7 +14,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "runner.service.j2"
-    dest: "{{ _user_info.home }}/.config/systemd/user/runner.service"
+    dest: "{{ runner_dir }}/.config/systemd/user/runner.service"
     mode: "0644"
   notify: Restart runner
 
@@ -23,7 +23,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "get_runner_token.sh.j2"
-    dest: "{{ _user_info.home }}/bin/get_runner_token.sh"
+    dest: "{{ runner_dir }}/bin/get_runner_token.sh"
     mode: "0755"
   notify: Restart runner
 
@@ -32,7 +32,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "get_token.sh.j2"
-    dest: "{{ _user_info.home }}/bin/get_token.sh"
+    dest: "{{ runner_dir }}/bin/get_token.sh"
     mode: "0755"
   notify: Restart runner
 
@@ -41,7 +41,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "post-stop.sh.j2"
-    dest: "{{ _user_info.home }}/bin/post-stop.sh"
+    dest: "{{ runner_dir }}/bin/post-stop.sh"
     mode: "0755"
   notify: Restart runner
 
@@ -50,7 +50,7 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "pre-start.sh.j2"
-    dest: "{{ _user_info.home }}/bin/pre-start.sh"
+    dest: "{{ runner_dir }}/bin/pre-start.sh"
     mode: "0755"
   notify: Restart runner
 
@@ -59,6 +59,6 @@
   become_user: "{{ runner_user }}"
   ansible.builtin.template:
     src: "start-runner.sh.j2"
-    dest: "{{ _user_info.home }}/bin/start-runner.sh"
+    dest: "{{ runner_dir }}/bin/start-runner.sh"
     mode: "0755"
   notify: Restart runner

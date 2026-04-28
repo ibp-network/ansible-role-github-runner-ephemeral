@@ -1,17 +1,16 @@
 ---
-docker_host: unix:///run/user/{{ _user_info.uid }}/docker.sock
-runtime_dir: /run/user/{{ _user_info.uid }}
 
-os_build: ubuntu:latest
-dind_rooted_build: docker:dind
-dind_rootless_build: docker:dind-rootless
-
-runner_build: myoung34/github-runner:ubuntu-noble
-runner_user: github-runner
-runner_group: github-runner
-runner_dir: /home/github-runner
+# please keep the user and group names according to myoung34's implementation, i.e. 'runner'
+runner_user: runner
+runner_group: runner
+runner_dir: /home/runner
 runner_scope: org
 runner_labels: self-hosted,ephemeral,ubuntu-latest
 runner_run_as_root: true
 runner_disable_auto_update: false
 runner_is_ephemeral: true
+runner_build: myoung34/github-runner:ubuntu-noble
+
+dind_build: docker:dind
+runtime_dir: /run/user/{{ _user_info.uid }}
+docker_host: unix:///run/user/{{ _user_info.uid }}/docker.sock

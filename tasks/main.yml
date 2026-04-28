@@ -11,8 +11,5 @@
 - name: Include tasks to install docker
   ansible.builtin.include_tasks: install_docker.yml
 
-#- name: Include tasks to install docker cleanup
-#  ansible.builtin.include_tasks: install_docker_cleanup.yml
-
 - name: Include tasks to install ephemeral runner
   ansible.builtin.include_tasks: install_ephemeral_runner.yml
