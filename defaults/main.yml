@@ -1,10 +1,10 @@
 ---
-docker_host: "unix:///run/user/{{ _user_info.uid }}/docker.sock"
-runtime_dir: "/run/user/{{ _user_info.uid }}"
+docker_host: unix:///run/user/{{ _user_info.uid }}/docker.sock
+runtime_dir: /run/user/{{ _user_info.uid }}
 
-os_build: "ubuntu:latest"
-dind_rooted_build: "docker:dind"
-dind_rootless_build: "docker:dind-rootless"
+os_build: ubuntu:latest
+dind_rooted_build: docker:dind
+dind_rootless_build: docker:dind-rootless
 
 runner_build: myoung34/github-runner:ubuntu-noble
 runner_user: github-runner
