@@ -27,7 +27,6 @@ export XDG_RUNTIME_DIR={{ runtime_dir }}
 export DOCKER_HOST={{ docker_host }}
 
 docker pull {{ runner_build }}
-docker pull {{ dind_rooted_build }}
 docker pull {{ dind_rootless_build }}
 
 mkdir -p {{ runner_dir }}/dind-etc
@@ -48,6 +47,9 @@ docker volume create --name dindWork
 docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
+docker run --rm --name dind-prepare -v dindHome:/home {{ dind_rootless_build }} sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_user }}:{{ runner_group }} /home/{{ runner_user }}"
+docker run --rm --name dind-prepare -v dockerSock:{{ runtime_dir }} {{ dind_rootless_build }} chmod 777 /run/docker
+
 docker run -d --rm --name secured-container \
   --privileged \
   -v dockerSock:{{ runtime_dir }} \
@@ -60,11 +62,8 @@ docker run -d --rm --name secured-container \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
   {{ dind_rootless_build }} \
-  sh -c "\
-    dockerd --host={{ docker_host }};\
-    chmod 666 {{ runtime_dir }}/docker.sock\
-    mkdir /home/{{ runner_user }};\
-    chown -R {{ runner_user }}:{{ runner_group }} /home/{{ runner_user }}\
-    chmod 777 /run/docker"
-
+  dockerd --host={{ docker_host }}
+  
 sleep 3
+
+docker run --rm --name dind-prepare -v dockerSock:{{ runtime_dir }} {{ dind_rootless_build }} chmod 666 {{ runtime_dir }}/docker.sock
