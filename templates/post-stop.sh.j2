@@ -9,9 +9,6 @@ docker stop secured-container   || echo ok
 
 sleep 5
 
-docker rm github-runner
-docker rm secured-container
-
 docker volume rm dindHome
 docker volume rm dockerSock
 docker volume rm dindWork

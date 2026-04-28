@@ -27,17 +27,21 @@ export XDG_RUNTIME_DIR={{ runtime_dir }}
 export DOCKER_HOST={{ docker_host }}
 
 docker pull {{ runner_build }}
+docker pull {{ dind_rooted_build }}
+docker pull {{ dind_rootless_build }}
 
 mkdir -p {{ _user_info.home }}/dind-etc
-docker run --rm --name dind-prepare {{ docker_dind_rootless_build }} cat /etc/subuid  > {{ _user_info.home }}/dind-etc/subuid
-docker run --rm --name dind-prepare {{ docker_dind_rootless_build }} cat /etc/subgid  > {{ _user_info.home }}/dind-etc/subgid
-docker run --rm --name dind-prepare {{ docker_dind_rootless_build }} cat /etc/group   > {{ _user_info.home }}/dind-etc/group
-docker run --rm --name dind-prepare {{ docker_dind_rootless_build }} cat /etc/passwd  > {{ _user_info.home }}/dind-etc/passwd
 
-echo 'runner:x:{{ _user_info.uid }}:{{ _group_info.gid }}:runner:/home/runner:/bin/bash'  >> {{ _user_info.home }}/dind-etc/passwd
-echo 'runner:x:{{ _group_info.gid }}:'                                                    >> {{ _user_info.home }}/dind-etc/group
-echo 'runner:100000:65536'                                                                >> {{ _user_info.home }}/dind-etc/subgid
-echo 'runner:100000:65536'                                                                >> {{ _user_info.home }}/dind-etc/subuid
+docker run --rm --name dind-prepare {{ dind_rootless_build }} sh -c "\
+  cat /etc/subuid  > {{ _user_info.home }}/dind-etc/subuid;\
+  cat /etc/subgid  > {{ _user_info.home }}/dind-etc/subgid;\
+  cat /etc/group   > {{ _user_info.home }}/dind-etc/group;\
+  cat /etc/passwd  > {{ _user_info.home }}/dind-etc/passwd"
+
+echo '{{ runner_user }}:32768:65536'                                                                           >> {{ _user_info.home }}/dind-etc/subuid
+echo '{{ runner_group }}:32768:65536'                                                                          >> {{ _user_info.home }}/dind-etc/subgid
+echo '{{ runner_group }}:x:{{ _group_info.gid }}:{{ runner_user }}'                                            >> {{ _user_info.home }}/dind-etc/group
+echo '{{ runner_user }}:x:{{ _user_info.uid }}:{{ _group_info.gid }}:Github Runner:{{ runner_dir }}:/bin/bash' >> {{ _user_info.home }}/dind-etc/passwd
 
 docker volume create --name dindHome
 docker volume create --name dockerSock
@@ -56,11 +60,12 @@ docker run -d --rm --name secured-container \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
-  {{ docker_dind_rooted_build }} \
-  dockerd --host={{ docker_host }}
+  {{ dind_rootless_build }} \
+  sh -c "\
+    dockerd --host={{ docker_host }};\
+    chmod 666 {{ runtime_dir }}/docker.sock\
+    mkdir /home/{{ runner_user }};\
+    chown -R {{ runner_user }}:{{ runner_group }} /home/{{ runner_user }}\
+    chmod 777 /run/docker"
 
 sleep 3
-
-docker run --rm --name dind-prepare -v dindHome:/home {{ docker_dind_os_build }} bash -c "mkdir /home/runner; chown -R {{ _user_info.uid }}:{{ _group_info.gid }} /home/runner"
-docker run --rm --name dind-prepare -v dockerSock:{{ runtime_dir }} {{ docker_dind_rootless_build }} chmod 777 /run/docker
-docker run --rm --name dind-prepare -v dockerSock:{{ runtime_dir }} {{ docker_dind_rootless_build }} chmod 666 {{ runtime_dir }}/docker.sock

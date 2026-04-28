@@ -2,11 +2,10 @@
 docker_host: "unix:///run/user/{{ _user_info.uid }}/docker.sock"
 runtime_dir: "/run/user/{{ _user_info.uid }}"
 
-#docker_dind_version: 28.3
-docker_dind_rooted_build: "docker:dind"
-docker_dind_rootless_build: "docker:dind-rootless"
-docker_dind_os_build: "ubuntu:latest"
+dind_rooted_build: "docker:dind"
+dind_rootless_build: "docker:dind-rootless"
 
+runner_build: myoung34/github-runner:ubuntu-noble
 runner_user: github-runner
 runner_group: github-runner
 runner_dir: /home/github-runner
@@ -15,4 +14,3 @@ runner_labels: self-hosted,ephemeral,ubuntu-latest
 runner_run_as_root: true
 runner_disable_auto_update: false
 runner_is_ephemeral: true
-runner_build: myoung34/github-runner:ubuntu-noble
