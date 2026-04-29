@@ -1,15 +1,15 @@
 #!/bin/bash
 echo "Running the start-runner script"
 
-export XDG_RUNTIME_DIR={{ runtime_dir }}
-export DOCKER_HOST={{ docker_host }}
+export XDG_RUNTIME_DIR={{ rootless_rundir }}
+export DOCKER_HOST={{ rootless_host }}
 
 docker run --rm --name github-runner \
   --privileged \
-  --env-file {{ runner_dir }}/runner-decrypted.env \
-  -v dockerSock:{{ runtime_dir }} \
+  --env-file {{ _user_info.home }}/runner-decrypted.env \
+  -v dockerSock:{{ rootless_rundir }} \
   -v dindHome:/home \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
-  {{ runner_build }}
+  {{ runner_image }}

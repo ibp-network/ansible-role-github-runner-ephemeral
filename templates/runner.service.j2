@@ -4,12 +4,12 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-WorkingDirectory={{ runner_dir }}
+WorkingDirectory={{ _user_info.home }}
 TimeoutStartSec=0
 Restart=always
-ExecStartPre=-{{ runner_dir }}/bin/pre-start.sh
-ExecStart={{ runner_dir }}/bin/start-runner.sh
-ExecStopPost={{ runner_dir }}/bin/post-stop.sh
+ExecStartPre=-{{ _user_info.home }}/bin/pre-start.sh
+ExecStart={{ _user_info.home }}/bin/start-runner.sh
+ExecStopPost={{ _user_info.home }}/bin/post-stop.sh
 
 [Install]
 WantedBy=default.target

@@ -5,7 +5,7 @@ Documentation=https://docs.docker.com/go/rootless/
 Requires=dbus.socket
 
 [Service]
-Environment=PATH=/usr/bin:/sbin:/usr/sbin:{{ runner_dir }}/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+Environment=PATH=/usr/bin:/sbin:/usr/sbin:{{ _user_info.home }}/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
 Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_DISABLE_HOST_LOOPBACK=false
 ExecStart=/usr/bin/dockerd-rootless.sh
 ExecReload=/bin/kill -s HUP $MAINPID

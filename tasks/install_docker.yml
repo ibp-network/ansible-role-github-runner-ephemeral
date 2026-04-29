@@ -88,25 +88,25 @@
 
 - name: Create User bin dir
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.file:
-    path: "{{ runner_dir }}/bin"
+    path: "{{ _user_info.home }}/bin"
     state: directory
     mode: "0700"
 
 - name: Create systemd config dir
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.file:
-    path: "{{ runner_dir }}/.config/systemd/user"
+    path: "{{ _user_info.home }}/.config/systemd/user"
     state: directory
     mode: "0700"
 
 - name: Copy docker systemd service file
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "docker.service.j2"
-    dest: "{{ runner_dir }}/.config/systemd/user/docker.service"
+    dest: "{{ _user_info.home }}/.config/systemd/user/docker.service"
     mode: "0644"
   notify: Restart docker

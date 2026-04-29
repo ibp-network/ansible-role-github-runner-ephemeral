@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "Running the post-stop script"
 
-export XDG_RUNTIME_DIR={{ runtime_dir }}
-export DOCKER_HOST={{ docker_host }}
+export XDG_RUNTIME_DIR={{ rootless_rundir }}
+export DOCKER_HOST={{ rootless_host }}
 
 docker stop github-runner       || echo ok
 docker stop secured-container   || echo ok
