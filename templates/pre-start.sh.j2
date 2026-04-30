@@ -56,6 +56,7 @@ docker run -d --rm --name dind-daemon \
   -v {{ _user_info.home }}/dind-etc/subgid:/etc/subgid \
   -v {{ _user_info.home }}/dind-etc/passwd:/etc/passwd \
   -v {{ _user_info.home }}/dind-etc/group:/etc/group \
+  -v {{ _user_info.home }}/runner-decrypted.env:/etc/runner-decrypted.env \
   -v dindHome:/home \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
@@ -65,4 +66,4 @@ docker run -d --rm --name dind-daemon \
 sleep 3
 
 docker exec dind-daemon sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
-docker exec dind-daemon sh -c "chmod 777 /run/docker ; chmod 666 {{ rootless_rundir }}/docker.sock"
+docker exec dind-daemon sh -c "chmod 777 /run/docker ; chmod 666 run/docker.sock"
