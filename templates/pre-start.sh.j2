@@ -4,11 +4,11 @@ echo "Running the pre-start script"
 # scripts and runner will use runner-decrypted.env
 cp {{ _user_info.home }}/runner.env {{ _user_info.home }}/runner-decrypted.env
 
-# move the private key to a separate file (changed from exporting to environment variable APP_PRIVATE_KEY!)
+# In preparation to Token generation, move the private key to a separate file (instead of environment variable APP_PRIVATE_KEY!)
 cat {{ _user_info.home }}/runner.env | grep APP_PRIVATE_KEY | sed 's/APP_PRIVATE_KEY=//g' | sed 's/\\n/\'$'\n''/g' > {{ _user_info.home }}/runner-decrypted-private-key.pem
 
-# export the less critical APP_ID & APP_LOGIN as environment variables
-export $(grep -E '^(APP_ID|APP_LOGIN)' {{ _user_info.home }}/runner-decrypted.env)
+# export the rest of variables needed for token calculation to the environment
+export $(grep -E '^(APP_ID|APP_LOGIN|RUNNER_SCOPE|REPO_URL)' {{ _user_info.home }}/runner-decrypted.env)
 
 # remove the secrets from the runner-decrypted.env
 sed -i '/APP_ID/d' {{ _user_info.home }}/runner-decrypted.env
