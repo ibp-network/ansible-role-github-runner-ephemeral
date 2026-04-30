@@ -4,8 +4,8 @@ echo "Running the post-stop script"
 export XDG_RUNTIME_DIR={{ rootless_rundir }}
 export DOCKER_HOST={{ rootless_host }}
 
-docker stop github-runner       || echo ok
-docker stop secured-container   || echo ok
+docker stop github-runner
+docker stop dind-daemon
 
 sleep 5
 
@@ -15,7 +15,7 @@ docker volume rm dindWork
 docker volume rm dindRunner
 docker volume rm dindToolsCache
 
-#docker system prune -af --volumes
+#docker system prune --volumes
 
 rm -rf {{ runner_dir }}/dind-etc
 rm -f {{ runner_dir }}/runner-decrypted.env

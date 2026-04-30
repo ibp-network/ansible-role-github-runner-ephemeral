@@ -49,9 +49,9 @@ docker volume create --name dindWork
 docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
-docker run -d --rm --name secured-container \
+docker run -d --rm --name dind-daemon \
   --privileged \
-  -v dockerSock:{{ rootless_rundir }} \
+  -v dockerSock:/run \
   -v {{ _user_info.home }}/dind-etc/subuid:/etc/subuid \
   -v {{ _user_info.home }}/dind-etc/subgid:/etc/subgid \
   -v {{ _user_info.home }}/dind-etc/passwd:/etc/passwd \
@@ -60,10 +60,9 @@ docker run -d --rm --name secured-container \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
-  {{ rootless_image }} \
-  dockerd --host={{ rootless_host }}
+  {{ rootless_image }}
   
 sleep 3
 
-docker exec secured-container sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
-docker exec secured-container chmod 666 {{ rootless_rundir }}/docker.sock
+docker exec dind-daemon sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
+docker exec dind-daemon sh -c "chmod 777 /run/docker ; chmod 666 {{ rootless_rundir }}/docker.sock"
