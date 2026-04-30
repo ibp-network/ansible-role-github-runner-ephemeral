@@ -14,7 +14,33 @@ workflow changes are gated by a verification process (in the actions
 settings) so that malicious PR's cannot exfiltrate these.
 ```
 
-To solve this we are using @alvicsam's solution and are going to run another docker container in parallel, which will be run in a rootless docker setup.
+To solve this we are using @alvicsam's solution and are going to run another docker container in parallel, which will be run in a rootless docker setup, as shown below:
+
+## Rootless Docker inside Rootless Docker
+
+```mermaid
+---
+title: A peer-to-peer network
+---
+
+flowchart LR
+  subgraph box1 [Hardware fa:fa-computer]
+    direction LR
+    style box1 fill:darkblue,stroke-dasharray: 5 5
+    A@{ shape: st-rect, label: "Hardware fa:fa-computer" }
+    node1(node) --- node2(node)
+    node1 --- node3(node)
+    node1 --- node4(node)
+    node1 --- node5(node)
+    node2 --- node3
+    node2 --- node4
+    node2 --- node5
+    node3 --- node4
+    node3 --- node5
+    node4 --- node5
+  end
+```
+
 
 ## Role Requirements
 
