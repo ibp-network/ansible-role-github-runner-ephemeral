@@ -16,28 +16,41 @@ settings) so that malicious PR's cannot exfiltrate these.
 
 To solve this we are using @alvicsam's solution and are going to run another docker container in parallel, which will be run in a rootless docker setup, as shown below:
 
-## Rootless Docker inside Rootless Docker
+## Containerised setup
 
 ```mermaid
 ---
-title: A peer-to-peer network
+title: Rootless Docker inside Rootless Docker
 ---
+flowchart TB
 
-flowchart LR
-  subgraph box1 [Hardware fa:fa-computer]
-    direction LR
-    style box1 fill:darkblue,stroke-dasharray: 5 5
-    A@{ shape: st-rect, label: "Hardware fa:fa-computer" }
-    node1(node) --- node2(node)
-    node1 --- node3(node)
-    node1 --- node4(node)
-    node1 --- node5(node)
-    node2 --- node3
-    node2 --- node4
-    node2 --- node5
-    node3 --- node4
-    node3 --- node5
-    node4 --- node5
+  subgraph box1 [fa:fa-twitter Hardware]
+    direction TB
+
+    subgraph box12 ["user: github-runner"]
+      direction TB
+      A@{ shape: st-rect, label: "Nothing to see here" }
+
+      subgraph box121 ["docker daemon level1"]
+        direction TB
+
+        subgraph box1211 ["dind-host container"]
+          direction LR
+            node12111(docker daemon level2)
+        end
+
+        subgraph box1212 ["github-runner container"]
+          direction TB
+            node12112(access)
+        end
+
+      end
+    end
+
+    subgraph box11 [user: root]
+      direction TB
+      A@{ shape: st-rect, label: "Hardware fa:fa-computer" }
+    end
   end
 ```
 
