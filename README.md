@@ -22,35 +22,60 @@ To solve this we are using @alvicsam's solution and are going to run another doc
 ---
 title: Rootless Docker inside Rootless Docker
 ---
-flowchart TB
+flowchart LR
 
-  subgraph box1 [fa:fa-twitter Hardware]
-    direction TB
+  subgraph machine [Machine]
 
-    subgraph box12 ["user: github-runner"]
-      direction TB
+    subgraph root1 [user: root]
+      style root1 fill:lightblue
       A@{ shape: st-rect, label: "Nothing to see here" }
+    end
 
-      subgraph box121 ["docker daemon level1"]
-        direction TB
+    subgraph user1 ["user: github-runner"]
+      style user1 fill:lightblue
+      
+      subgraph daemon1 ["docker daemon: rootless"]
 
-        subgraph box1211 ["dind-host container"]
-          direction LR
-            node12111(docker daemon level2)
+        subgraph container1 ["container: dind-host"]
+          style container1 fill:salmon
+
+          subgraph root2 ["user: root"]
+            style root2 fill:lightblue
+
+            daemon2("docker daemon: shared")
+
+          end
+
         end
 
-        subgraph box1212 ["github-runner container"]
-          direction TB
-            node12112(access)
+        subgraph container2 ["container: github-runner"]
+          style container2 fill:salmon
+
+          subgraph root5 ["user: root"]
+            style root5 fill:lightblue
+
+            daemon3("docker: remote sock")
+
+          end
+
+          subgraph user5 ["user: runner"]
+            style user5 fill:lightblue
+
+            app("app: github-runner")
+
+          end
+            
         end
 
       end
+
     end
 
-    subgraph box11 [user: root]
-      direction TB
-      A@{ shape: st-rect, label: "Hardware fa:fa-computer" }
-    end
+    root1 ~~~ user1
+    container1 ~~~ container2
+    daemon2 -.- daemon3
+    root5 ~~~ user5
+    
   end
 ```
 
