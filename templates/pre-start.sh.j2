@@ -51,12 +51,12 @@ docker volume create --name dindToolsCache
 
 docker run -d --rm --name dind-daemon \
   --privileged \
-  -v dockerSock:/run \
   -v {{ _user_info.home }}/dind-etc/subuid:/etc/subuid \
   -v {{ _user_info.home }}/dind-etc/subgid:/etc/subgid \
   -v {{ _user_info.home }}/dind-etc/passwd:/etc/passwd \
   -v {{ _user_info.home }}/dind-etc/group:/etc/group \
   -v {{ _user_info.home }}/runner-decrypted.env:/etc/runner-decrypted.env \
+  -v dockerSock:/run \
   -v dindHome:/home \
   -v dindWork:/_work \
   -v dindRunner:/actions-runner \
