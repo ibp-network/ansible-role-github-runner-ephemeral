@@ -19,3 +19,4 @@ runner_run_as_root: true
 runner_disable_auto_update: false
 runner_is_ephemeral: true
 runner_image: myoung34/github-runner:ubuntu-noble
+runner_host: unix:///run/docker.sock
