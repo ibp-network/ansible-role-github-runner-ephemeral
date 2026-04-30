@@ -35,6 +35,7 @@ flowchart LR
       style user1 fill:lightblue
       
       subgraph daemon1 ["docker daemon: rootless"]
+        style daemon1 fill:#ECECFF,stroke:#C6C6F1
 
         subgraph container1 ["container: dind-host"]
           style container1 fill:salmon
