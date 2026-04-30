@@ -12,7 +12,6 @@ sed -i '/APP_PRIVATE_KEY/d' {{ _user_info.home }}/runner-decrypted.env
 export $(cat {{ _user_info.home }}/runner-decrypted.env)
 
 # generate short-lived token, and store it in the runner-decrypted.env
-#ACCESS_TOKEN=$(APP_ID="${APP_ID}" REPO_URL="${REPO_URL}" bash {{ _user_info.home }}/bin/get_token.sh)
 ACCESS_TOKEN=$(bash {{ _user_info.home }}/bin/get_token.sh)
 _TOKEN=$(ACCESS_TOKEN="${ACCESS_TOKEN}" bash {{ _user_info.home }}/bin/get_runner_token.sh)
 echo "RUNNER_TOKEN=$(echo "${_TOKEN}" | jq -r .token)" >> {{ _user_info.home }}/runner-decrypted.env
@@ -50,8 +49,6 @@ docker volume create --name dindWork
 docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
-docker run --rm --name dind-prepare -v dindHome:/home {{ rootless_image }} sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
-
 docker run -d --rm --name secured-container \
   --privileged \
   -v dockerSock:{{ rootless_rundir }} \
@@ -68,5 +65,5 @@ docker run -d --rm --name secured-container \
   
 sleep 3
 
-#docker run --rm --name dind-prepare -v dockerSock:{{ rootless_rundir }} {{ rootless_image }} chmod 777 /run/docker
+docker exec secured-container sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
 docker exec secured-container chmod 666 {{ rootless_rundir }}/docker.sock

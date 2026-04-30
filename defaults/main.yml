@@ -2,7 +2,7 @@
 
 rootless_user: github-runner
 rootless_group: github-runner
-rootless_image: docker:dind-rootless
+rootless_image: docker:dind
 rootless_rundir: /run/user/{{ _user_info.uid }}
 rootless_host: unix://{{ rootless_rundir }}/docker.sock
 
