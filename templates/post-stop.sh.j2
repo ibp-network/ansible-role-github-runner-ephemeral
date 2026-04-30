@@ -15,7 +15,7 @@ docker volume rm dindWork
 docker volume rm dindRunner
 docker volume rm dindToolsCache
 
-docker system prune -af --volumes
+#docker system prune -af --volumes
 
 rm -rf {{ runner_dir }}/dind-etc
 rm -f {{ runner_dir }}/runner-decrypted.env
