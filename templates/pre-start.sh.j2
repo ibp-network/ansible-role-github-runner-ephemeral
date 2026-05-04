@@ -62,7 +62,7 @@ docker run -d --rm --name dind-daemon \
   -v dindToolsCache:/opt/hostedtoolcache \
   {{ rootless_image }}
   
-sleep 3
+sleep 5
 
 docker exec dind-daemon sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
 docker exec dind-daemon sh -c "chmod 777 /run/docker ; chmod 666 run/docker.sock"
