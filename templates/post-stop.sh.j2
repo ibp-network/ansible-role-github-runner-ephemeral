@@ -7,8 +7,6 @@ export DOCKER_HOST={{ rootless_host }}
 echo "pruning system while everything is running"
 docker system prune -af --volumes
 
-sleep 5
-
 echo "Stopping all docker containers"
 docker stop github-runner
 docker stop dind-daemon
