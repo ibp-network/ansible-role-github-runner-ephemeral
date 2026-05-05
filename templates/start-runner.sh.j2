@@ -15,7 +15,3 @@ docker run --rm --name github-runner \
   -v dindToolsCache:/opt/hostedtoolcache \
   {{ runner_image }}
 
-sleep 5
-
-echo "pruning all unused/dangling docker system elements"
-docker system prune -af --volumes
