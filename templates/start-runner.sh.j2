@@ -1,9 +1,10 @@
 #!/bin/bash
-echo "Running the start-runner script"
+echo "Execute the 'start-runner' script"
 
 export XDG_RUNTIME_DIR={{ rootless_rundir }}
 export DOCKER_HOST={{ rootless_host }}
 
+echo "Running the 'github-runner' docker container"
 docker run --rm --name github-runner \
   --privileged \
   --env-file {{ _user_info.home }}/runner-decrypted.env \
@@ -16,4 +17,5 @@ docker run --rm --name github-runner \
 
 sleep 5
 
+echo "pruning all unused/dangling docker system elements"
 docker system prune -af --volumes

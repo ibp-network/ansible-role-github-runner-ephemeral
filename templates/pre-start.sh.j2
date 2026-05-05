@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Running the pre-start script"
+echo "Executing the 'pre-start' script"
 
 # scripts and runner will use runner-decrypted.env
 cp {{ _user_info.home }}/runner.env {{ _user_info.home }}/runner-decrypted.env
@@ -12,6 +12,7 @@ sed -i '/APP_PRIVATE_KEY/d' {{ _user_info.home }}/runner-decrypted.env
 export $(cat {{ _user_info.home }}/runner-decrypted.env)
 
 # generate short-lived token, and store it in the runner-decrypted.env
+echo "Generating the short-lived github runner token"
 ACCESS_TOKEN=$(bash {{ _user_info.home }}/bin/get_token.sh)
 _TOKEN=$(ACCESS_TOKEN="${ACCESS_TOKEN}" bash {{ _user_info.home }}/bin/get_runner_token.sh)
 echo "RUNNER_TOKEN=$(echo "${_TOKEN}" | jq -r .token)" >> {{ _user_info.home }}/runner-decrypted.env
@@ -28,27 +29,33 @@ unset APP_LOGIN
 export XDG_RUNTIME_DIR={{ rootless_rundir }}
 export DOCKER_HOST={{ rootless_host }}
 
+echo "Pulling latest docker images from hub"
 docker pull {{ rootless_image }}
 docker pull {{ runner_image }}
 
+echo "Creating namespace customisation directory"
 mkdir -p {{ _user_info.home }}/dind-etc
 
+echo "Retrieving default namespaces and mapping information"
 docker run --rm --name dind-prepare {{ rootless_image }} cat /etc/subuid  > {{ _user_info.home }}/dind-etc/subuid
 docker run --rm --name dind-prepare {{ rootless_image }} cat /etc/subgid  > {{ _user_info.home }}/dind-etc/subgid
 docker run --rm --name dind-prepare {{ rootless_image }} cat /etc/group   > {{ _user_info.home }}/dind-etc/group
 docker run --rm --name dind-prepare {{ rootless_image }} cat /etc/passwd  > {{ _user_info.home }}/dind-etc/passwd
 
+echo "Customising namespace information and mapping ranges"
 echo '{{ runner_user }}:231072:65536' >> {{ _user_info.home }}/dind-etc/subuid
 echo '{{ runner_group }}:231072:65536' >> {{ _user_info.home }}/dind-etc/subgid
 echo '{{ runner_group }}:x:{{ runner_gid }}:{{ runner_user }}' >> {{ _user_info.home }}/dind-etc/group
 echo '{{ runner_user }}:x:{{ runner_uid }}:{{ runner_gid }}:Github Runner:/home/{{ runner_user }}:/bin/bash' >> {{ _user_info.home }}/dind-etc/passwd
 
+echo "Creating docker volumes"
 docker volume create --name dindHome
 docker volume create --name dockerSock
 docker volume create --name dindWork
 docker volume create --name dindRunner
 docker volume create --name dindToolsCache
 
+echo "Running the 'dind-daemon' docker container"
 docker run -d --rm --name dind-daemon \
   --privileged \
   -v {{ _user_info.home }}/dind-etc/subuid:/etc/subuid \
@@ -64,5 +71,6 @@ docker run -d --rm --name dind-daemon \
   
 sleep 5
 
+echo "Preparing directories and access to shared volumes"
 docker exec dind-daemon sh -c "mkdir /home/{{ runner_user }} && chown -R {{ runner_uid }}:{{ runner_gid }} /home/{{ runner_user }}"
 docker exec dind-daemon sh -c "chmod 777 /run/docker ; chmod 666 run/docker.sock"
