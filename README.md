@@ -14,7 +14,72 @@ workflow changes are gated by a verification process (in the actions
 settings) so that malicious PR's cannot exfiltrate these.
 ```
 
-To solve this we are using @alvicsam's solution and are going to run another docker container in parallel, which will be run in a rootless docker setup.
+To solve this we are using @alvicsam's solution and are going to run another docker container in parallel, which will be run in a rootless docker setup, as shown below:
+
+## Containerised setup
+
+```mermaid
+---
+title: Rootless Docker inside Rootless Docker
+---
+flowchart LR
+
+  subgraph machine [Machine]
+
+    subgraph root1 [user: root]
+      style root1 fill:lightblue
+      A@{ shape: st-rect, label: "Nothing to see here" }
+    end
+
+    subgraph user1 ["user: github-runner"]
+      style user1 fill:lightblue
+      
+      subgraph daemon1 ["docker daemon: rootless"]
+        style daemon1 fill:#ECECFF,stroke:#C6C6F1,stroke-width:2px
+
+        subgraph container1 ["container: dind-host"]
+          style container1 fill:salmon
+
+          subgraph root2 ["user: root"]
+            style root2 fill:lightblue
+
+            daemon2("docker daemon: shared")
+
+          end
+
+        end
+
+        subgraph container2 ["container: github-runner"]
+          style container2 fill:salmon
+
+          subgraph root5 ["user: root"]
+            style root5 fill:lightblue
+
+            daemon3("docker: remote sock")
+
+          end
+
+          subgraph user5 ["user: runner"]
+            style user5 fill:lightblue
+
+            app("app: github-runner")
+
+          end
+            
+        end
+
+      end
+
+    end
+
+    root1 ~~~ user1
+    container1 ~~~ container2
+    daemon2 -.- daemon3
+    root5 ~~~ user5
+    
+  end
+```
+
 
 ## Role Requirements
 

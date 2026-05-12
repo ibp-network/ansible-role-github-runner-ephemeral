@@ -1,7 +1,7 @@
 ---
 - name: Copy runner env file
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "ephemeral_runner.env.j2"
     dest: "{{ _user_info.home }}/runner.env"
@@ -11,7 +11,7 @@
 
 - name: Copy runner systemd service file
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "runner.service.j2"
     dest: "{{ _user_info.home }}/.config/systemd/user/runner.service"
@@ -20,7 +20,7 @@
 
 - name: Copy runner token script
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "get_runner_token.sh.j2"
     dest: "{{ _user_info.home }}/bin/get_runner_token.sh"
@@ -29,7 +29,7 @@
 
 - name: Copy get token script
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "get_token.sh.j2"
     dest: "{{ _user_info.home }}/bin/get_token.sh"
@@ -38,7 +38,7 @@
 
 - name: Copy post stop script
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "post-stop.sh.j2"
     dest: "{{ _user_info.home }}/bin/post-stop.sh"
@@ -47,7 +47,7 @@
 
 - name: Copy pre-start script
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "pre-start.sh.j2"
     dest: "{{ _user_info.home }}/bin/pre-start.sh"
@@ -56,7 +56,7 @@
 
 - name: Copy start-runner script
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.template:
     src: "start-runner.sh.j2"
     dest: "{{ _user_info.home }}/bin/start-runner.sh"

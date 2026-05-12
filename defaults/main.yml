@@ -1,14 +1,22 @@
 ---
-docker_host: "unix:///run/user/{{ _user_info.uid }}/docker.sock"
 
-docker_dind_version: 28.3
+rootless_user: github-runner
+rootless_group: github-runner
+rootless_image: docker:dind
+rootless_rundir: /run/user/{{ _user_info.uid }}
+rootless_host: unix://{{ rootless_rundir }}/docker.sock
 
-runner_user: github-runner
-runner_group: github-runner
-runner_dir: /home/github-runner
+# please keep the user and group names according to myoung34's implementation, i.e. 'runner:1001:121'
+runner_name: ibp-xx
+runner_user: runner
+runner_uid: 1001
+runner_group: runner
+runner_gid: 121
+runner_dir: /home/runner
 runner_scope: org
 runner_labels: self-hosted,ephemeral,ubuntu-latest
 runner_run_as_root: true
 runner_disable_auto_update: false
 runner_is_ephemeral: true
-runner_build: myoung34/github-runner:ubuntu-noble
+runner_image: myoung34/github-runner:ubuntu-noble
+runner_host: unix:///run/docker.sock

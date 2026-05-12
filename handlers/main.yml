@@ -1,7 +1,7 @@
 ---
 - name: Restart docker
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.systemd:
     name: docker.service
     state: restarted
@@ -12,7 +12,7 @@
 
 - name: Restart runner
   become: true
-  become_user: "{{ runner_user }}"
+  become_user: "{{ rootless_user }}"
   ansible.builtin.systemd:
     name: runner.service
     state: restarted
